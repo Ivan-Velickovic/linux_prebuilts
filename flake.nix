@@ -16,28 +16,49 @@
           inherit system;
         };
 
-        linux615 = pkgs.fetchFromGitHub {
+        linux-615 = pkgs.fetchFromGitHub {
           owner = "torvalds";
           repo = "linux";
           rev = "v6.15";
           hash = "sha256-PQjXBWJV+i2O0Xxbg76HqbHyzu7C0RWkvHJ8UywJSCw=";
         };
 
-        linux616 = pkgs.fetchFromGitHub {
+        linux-616 = pkgs.fetchFromGitHub {
           owner = "torvalds";
           repo = "linux";
           rev = "v6.16";
           hash = "sha256-7Nbq7gyooVwKUpHnOUNUvYPxY9kwCzgw4kGdTiEkKkk=";
         };
 
-        linux616arm64 = (pkgs.pkgsCross.aarch64-multiplatform.callPackage ./linux.nix {}) {
+        linux-616-arm64 = (pkgs.pkgsCross.aarch64-multiplatform.callPackage ./linux.nix {}) {
           version = "6.16";
           src = linux616;
           arch = "arm64";
           defconfig = "defconfig";
         };
+
+        linux-616-riscv64 = (pkgs.pkgsCross.riscv64.callPackage ./linux.nix {}) {
+          version = "6.16";
+          src = linux616;
+          arch = "riscv64";
+          defconfig = "defconfig";
+        };
+
+        allImages = pkgs.runCommand "all-images" { nativeBuildInputs = with pkgs; [ gnutar gzip ]; }
+          ''
+            mkdir -p $out
+
+            cp ${linux-616-arm64}/* $out/linux-616-arm64/
+            cp ${linux-616-riscv64}/* $out/linux-616-riscv64/
+
+            cd $out
+          ''
+        ;
       in
       {
-        packages.default = linux616arm64;
+        packages.linux-616-arm64 = linux-616-arm64;
+        packages.linux-616-riscv64 = linux-616-riscv64;
+
+        packages.default = allImages;
       });
 }
