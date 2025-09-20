@@ -1,6 +1,7 @@
 {
   stdenv,
   lib,
+  elfutils,
   bc,
   bison,
   dtc,
@@ -65,6 +66,7 @@
           installShellFiles
           python3
           which
+          elfutils
         ];
         depsBuildBuild = [ buildPackages.gccStdenv.cc ]; # gccStdenv is needed for Darwin buildPlatform
 
@@ -98,8 +100,9 @@
           mkdir -p ${installDir}
           cp .config ${installDir}/config
           cp vmlinux ${installDir}
-          cp arch/${arch}/boot/Image ${installDir}
-          cp arch/${arch}/boot/Image.gz ${installDir}
+          ls -l arch/${arch}/boot/Image && cp arch/${arch}/boot/Image ${installDir}
+          ls -l arch/${arch}/boot/Image.gz && cp arch/${arch}/boot/Image.gz ${installDir}
+          ls -l arch/${arch}/boot/bzImage && cp arch/${arch}/boot/bzImage ${installDir}
 
           runHook postInstall
         '';
