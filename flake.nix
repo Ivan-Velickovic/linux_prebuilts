@@ -37,6 +37,13 @@
           defconfig = "defconfig";
         };
 
+        linux-616-arm = (pkgs.pkgsCross.arm-embedded.callPackage ./linux.nix {}) {
+          version = "6.16";
+          src = linux-616;
+          arch = "arm";
+          defconfig = "defconfig";
+        };
+
         linux-616-arm64 = (pkgs.pkgsCross.aarch64-multiplatform.callPackage ./linux.nix {}) {
           version = "6.16";
           src = linux-616;
@@ -58,6 +65,9 @@
             mkdir -p $out/linux-616-x86-64/
             cp ${linux-616-x86-64}/* $out/linux-616-x86-64/
 
+            mkdir -p $out/linux-616-arm/
+            cp ${linux-616-arm}/* $out/linux-616-arm/
+
             mkdir -p $out/linux-616-arm64/
             cp ${linux-616-arm64}/* $out/linux-616-arm64/
 
@@ -71,6 +81,7 @@
       in
       {
         packages.linux-616-x86-64 = linux-616-x86-64;
+        packages.linux-616-arm = linux-616-arm;
         packages.linux-616-arm64 = linux-616-arm64;
         packages.linux-616-riscv64 = linux-616-riscv64;
 
